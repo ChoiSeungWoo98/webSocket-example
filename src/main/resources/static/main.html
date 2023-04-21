@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>socket-test</title>
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
+
+    <script type="text/javascript">
+        var stompClient = null;
+        var privateStompClient = null;
+        var socket = null;
+
+        $(function () {
+            socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function(frame) {
+                console.log(frame);
+                stompClient.subscribe('/all/messages', function(result) {
+                    show(JSON.parse(result.body));
+                });
+            });
+
+            // socket = new SockJS('/ws');
+            // privateStompClient = Stomp.over(socket);
+            // privateStompClient.connect({}, function(frame) {
+            //     console.log(frame);
+            //     privateStompClient.subscribe('/user/specific', function(result) {
+            //         console.log(result.body)
+            //         show(JSON.parse(result.body));
+            //     });
+            // });
+
+
+
+
+            // enter 키 이벤트
+            $(document).on('keydown', 'div.input-div textarea', function (e) {
+                if (e.keyCode == 13 && !e.shiftKey) {
+                    e.preventDefault();
+                    const message = $(this).val();
+                    sendMessage()
+                    // 입력창 clear
+                    clearTextarea();
+                }
+            });
+
+            // 메세지 입력박스 내용 지우기
+            function clearTextarea() {
+                $('div.input-div textarea').val('');
+            }
+
+            $('.back').on('click', function () {
+                location.href = 'login.html';
+            });
+
+
+        });
+
+
+
+
+        function sendMessage() {
+            var text = document.getElementById('text').value;
+            stompClient.send("/app/application", {},
+                JSON.stringify({'text':text}));
+        }
+
+        function sendPrivateMessage() {
+            var text = document.getElementById('privateText').value;
+            var to = document.getElementById('to').value;
+            stompClient.send("/app/private", {},
+                JSON.stringify({'text':text, 'to':to}));
+        }
+
+        function show(message) {
+            var response = document.getElementById('messages');
+            var p = document.createElement('p');
+            p.innerHTML= "message: "  + message.text;
+            response.appendChild(p);
+        }
+
+    </script>
+</head>
+<body>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .chat_wrap .header {
+        font-size: 60px;
+        padding: 50px 0;
+        background: #6ab1ec;
+        color: white;
+        text-align: center;
+    }
+
+    .chat_wrap .chat {
+        padding-bottom: 80px;
+    }
+
+    .chat_wrap .chat ul {
+        width: 100%;
+        list-style: none;
+    }
+
+    .chat_wrap .chat ul li {
+        width: 100%;
+    }
+
+    .chat_wrap .chat ul li.left {
+        text-align: left;
+    }
+
+    .chat_wrap .chat ul li.right {
+        text-align: right;
+    }
+
+    .chat_wrap .chat ul li > div {
+        font-size: 13px;
+    }
+
+    .chat_wrap .chat ul li > div.sender {
+        margin: 10px 20px 0 20px;
+        font-weight: bold;
+    }
+
+    .chat_wrap .chat ul li > div.message {
+        display: inline-block;
+        word-break: break-all;
+        margin: 5px 20px;
+        max-width: 75%;
+        border: 1px solid #888;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #FCFCFC;
+        color: #555;
+        text-align: left;
+    }
+
+    .chat_wrap .input-div {
+        height: 300px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #FFF;
+        text-align: center;
+    }
+
+    .chat_wrap .input-div > textarea {
+        width: 100%;
+        height: 100%;
+        border: none;
+        padding: 10px;
+        background-color: #6ab1ec;
+        font-size: 20px;
+        color: white;
+    }
+
+    .format {
+        display: none;
+    }
+
+    textarea::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 40px;
+    }
+</style>
+
+
+<div id="chat">
+    <div class="chat_wrap">
+        <div class="back" style="position: absolute;margin-top: 17px; margin-left: 15px; zoom: 3">
+            <svg class="xe-flex" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.205 19 3 11.868 10.205 5" stroke="#fff" stroke-width="1.5" stroke-miterlimit="10"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M21 12.75a.75.75 0 0 0 0-1.5v1.5Zm-17-1.5a.75.75 0 0 0 0 1.5v-1.5Zm17 0H4v1.5h17v-1.5Z"
+                      fill="#fff"/>
+            </svg>
+        </div>
+        <div class="header">
+            SeungTalk
+        </div>
+        <div id="messages" class="chat">
+        </div>
+        <div class="input-div" id="input-div">
+            <textarea placeholder="메시지를 입력해주세요."></textarea>
+        </div>
+
+        <!-- format -->
+
+        <div class="chat format">
+            <ul>
+                <li>
+                    <div class="sender">
+                        <span></span>
+                    </div>
+                    <div class="message">
+                        <span></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>
