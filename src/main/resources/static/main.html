@@ -20,9 +20,18 @@
             stompClient.connect({}, function(frame) {
                 console.log("------------ connect ------------");
                 console.log(frame);
+
                 stompClient.subscribe('/all/messages', function(result) {
+                    console.log('---------------- message ----------------');
                     console.log(result);
                     show(JSON.parse(result.body));
+                });
+
+                stompClient.subscribe('/sub/channel/all', function(result) {
+                    console.log('---------------- admin message ----------------');
+                    console.log(result);
+                    alert(JSON.parse(result.body));
+                    // show(JSON.parse(result.body));
                 });
             });
 
@@ -71,12 +80,12 @@
             if(message.sender !== name) {
                 messageTag =
                     '<li style="list-style-type: none; float: left; background-color: #6ab1ec; width: 40%; padding: 30px 30px; margin: 30px 20px; border-radius: 10px;">' +
-                    '   <p style="font-size: 40px; color: white; font-weight: 500;">' + message.data + '</p>' +
+                    '   <p style="font-size: 40px; color: white; font-weight: 500;">' + message.sender + " : " + message.data + '</p>' +
                     '</li>';
             } else {
                 messageTag =
                     '<li style="list-style-type: none; float: right; background-color: rgba(0,0,0,0.3); width: 40%; padding: 30px 30px; margin: 30px 20px; border-radius: 10px;">' +
-                    '   <p style="font-size: 40px; color: white; font-weight: 500;">' + message.data + '</p>' +
+                    '   <p style="font-size: 40px; color: white; font-weight: 500;">' + message.sender + " : " + message.data + '</p>' +
                     '</div>';
             }
 

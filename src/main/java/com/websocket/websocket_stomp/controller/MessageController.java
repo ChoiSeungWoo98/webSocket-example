@@ -17,7 +17,8 @@ public class MessageController {
         /pub/hello              - 메시지 발행
     */
     // Mapped as /app/application
-    @SendTo("/all/messages")
+    @MessageMapping("/alert")
+    @SendTo("/all/admin")
     public void message(Message message) {
         simpMessageSendingOperations.convertAndSend("/sub/channel/" + message.getChannelId(), message);
     }

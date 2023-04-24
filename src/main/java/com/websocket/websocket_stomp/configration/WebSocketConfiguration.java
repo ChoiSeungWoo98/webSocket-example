@@ -12,10 +12,8 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/sub");
-        registry.setApplicationDestinationPrefixes("/pub");
-        registry.enableSimpleBroker("/all","/specific");
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.enableSimpleBroker("/sub", "/all", "/specific");
+        registry.setApplicationDestinationPrefixes("/pub", "/app");
     }
 
     @Override
@@ -23,7 +21,6 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
         registry
                 .addEndpoint("/ws")
                 .setAllowedOrigins("*");
-//        registry.addEndpoint("/ws");
         registry.addEndpoint("/ws").withSockJS();
     }
 
