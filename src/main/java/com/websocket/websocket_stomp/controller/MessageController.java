@@ -16,12 +16,16 @@ public class MessageController {
         /sub/channel/12345      - 구독(channelId:12345)
         /pub/hello              - 메시지 발행
     */
-
     // Mapped as /app/application
-    @MessageMapping("/application")
     @SendTo("/all/messages")
     public void message(Message message) {
         simpMessageSendingOperations.convertAndSend("/sub/channel/" + message.getChannelId(), message);
+    }
+
+    @MessageMapping("/application")
+    @SendTo("/all/messages")
+    public Message send(final Message message) throws Exception {
+        return message;
     }
 
 }
