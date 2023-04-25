@@ -9,12 +9,13 @@
 
     <script type="text/javascript">
         var stompClient = null;
-        var privateStompClient = null;
         var socket = null;
         var name = '';
+        var cors;
 
         $(function () {
-            socket = new SockJS('/ws');
+            socket = new SockJS('http://localhost:8080/ws');
+            // socket = new SockJS('/ws');
             stompClient = Stomp.over(socket);
 
             stompClient.connect({}, function(frame) {
@@ -29,9 +30,7 @@
 
                 stompClient.subscribe('/sub/channel/all', function(result) {
                     console.log('---------------- admin message ----------------');
-                    console.log(result);
-                    alert(JSON.parse(result.body));
-                    // show(JSON.parse(result.body));
+                    show(JSON.parse(result.body));
                 });
             });
 
@@ -77,6 +76,15 @@
         function show(message) {
             var response = $('#messages');
             var messageTag = '';
+
+            if (message.sender == 'admin') {
+                alert(
+                    '-------- 관리자 메세지 --------\n' +
+                    message.data
+                )
+                return;
+            }
+
             if(message.sender !== name) {
                 messageTag =
                     '<li style="list-style-type: none; float: left; background-color: #6ab1ec; width: 40%; padding: 30px 30px; margin: 30px 20px; border-radius: 10px;">' +

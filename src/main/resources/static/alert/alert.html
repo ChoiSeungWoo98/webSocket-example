@@ -1,0 +1,44 @@
+<html>
+    <div class="modal-success-alert h-[100vh] w-[100vw] fixed top-0 z-1 hidden bg-[#000]/[0.5] z-[11]">
+        <div class="flex flex-row items-center justify-center h-[100vh] w-[100vw] absolute z-2">
+            <div class="inline-flex flex-col rounded-[5px] py-[32px] px-[48px] box-border bg-[#ffffff] shadow-[0_10px_60px_0px_rgba(0,0,0,0.26)]">
+                <div class="flex mb-[32px] flex-col row-gap-[16px] items-center">
+                <span class="flex w-[32px] h-[32px]">
+                    <svg width="27" height="28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5.667C6.14.667.167 6.64.167 14S6.14 27.333 13.5 27.333 26.833 21.36 26.833 14 20.86.667 13.5.667Zm-2.667 20L4.166 14l1.88-1.88 4.787 4.773 10.12-10.12 1.88 1.894-12 12Z" fill="#3BB938"/></svg>
+                </span>
+                    <h1 class="flex text-[#222] text-[18px] font-bold mt-[16px]" data-bind="title"></h1>
+                </div>
+                <div class="flex justify-center">
+                    <p class="flex text-[#222] text-[16px] text-center" data-bind="content"></p>
+                </div>
+                <div class="btn-div flex justify-center mt-[32px]">
+                    <button class="btn-ok inline-flex py-[11px] px-[64px] box-border rounded-[5px] border-[#DDD] border-[1px] bg-[#F6F6F6]">
+                        <span class="text-[#222] text-[12px]">확인</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openSuccessAlertModal(title, content, callback) {
+            $('[data-bind="title"]').html(title);
+            $('[data-bind="content"]').html(content);
+
+            $('.modal-success-alert').removeClass('hidden');
+            $('.btn-ok').on('click', function () {
+                closeSuccessAlertModal()
+
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            });
+
+        }
+
+        function closeSuccessAlertModal() {
+            $('.modal-success-alert').addClass('hidden');
+        }
+
+    </script>
+</html>
