@@ -3,105 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>socket-test</title>
-    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
-
-    <script type="text/javascript">
-        var stompClient = null;
-        var socket = null;
-        var name = '';
-        var cors;
-
-        $(function () {
-            socket = new SockJS('http://localhost:8080/ws');
-            // socket = new SockJS('/ws');
-            stompClient = Stomp.over(socket);
-
-            stompClient.connect({}, function(frame) {
-                console.log("------------ connect ------------");
-                console.log(frame);
-
-                stompClient.subscribe('/all/messages', function(result) {
-                    console.log('---------------- message ----------------');
-                    console.log(result);
-                    show(JSON.parse(result.body));
-                });
-
-                stompClient.subscribe('/sub/channel/all', function(result) {
-                    console.log('---------------- admin message ----------------');
-                    show(JSON.parse(result.body));
-                });
-            });
-
-
-            // enter 키 이벤트
-            $(document).on('keydown', 'div.input-div textarea', function (e) {
-                if (e.keyCode == 13 && !e.shiftKey) {
-                    e.preventDefault();
-                    const message = $(this).val();
-                    if(message) {
-                        sendMessage();
-                        // 입력창 clear
-                        clearTextarea();
-                    }
-                }
-            });
-
-            // 메세지 입력박스 내용 지우기
-            function clearTextarea() {
-                $('div.input-div textarea').val('');
-            }
-
-            $('.back').on('click', function () {
-                location.href = 'login.html';
-            });
-
-
-        });
-
-        function sendMessage() {
-            console.log("------------ send ------------");
-            var message = document.getElementById('text').value;
-            const urlParams = new URL(location.href).searchParams;
-            name = urlParams.get('name');
-
-            stompClient.send("/app/application", {},
-                JSON.stringify({'type':'', 'sender':name, 'channelId':'all', 'data':message}));
-
-            var target = $('#messages');
-            target.scrollTop(target[0].scrollHeight);
-        }
-
-        function show(message) {
-            var response = $('#messages');
-            var messageTag = '';
-
-            if (message.sender == 'admin') {
-                alert(
-                    '-------- 관리자 메세지 --------\n' +
-                    message.data
-                )
-                return;
-            }
-
-            if(message.sender !== name) {
-                messageTag =
-                    '<li style="list-style-type: none; float: left; background-color: #6ab1ec; width: 40%; padding: 30px 30px; margin: 30px 20px; border-radius: 10px;">' +
-                    '   <p style="font-size: 40px; color: white; font-weight: 500;">' + message.sender + " : " + message.data + '</p>' +
-                    '</li>';
-            } else {
-                messageTag =
-                    '<li style="list-style-type: none; float: right; background-color: rgba(0,0,0,0.3); width: 40%; padding: 30px 30px; margin: 30px 20px; border-radius: 10px;">' +
-                    '   <p style="font-size: 40px; color: white; font-weight: 500;">' + message.sender + " : " + message.data + '</p>' +
-                    '</div>';
-            }
-
-            response.append(messageTag);
-            response.scrollTop(response[0].scrollHeight);
-        }
-
-    </script>
+<!--    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>-->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/sockjs.js"></script>
+    <script type="text/javascript" src="js/stomp.js"></script>
 </head>
 <body>
 <style>
@@ -229,4 +134,117 @@
     </div>
 </div>
 </body>
+<script>
+    var stompClient = null;
+    var socket = null;
+    var name = '';
+
+    $(function () {
+        // stomp 구독 처리 부분 시작
+        socket = new WebSocket('ws://localhost:8081/ws');
+        // socket = new WebSocket('ws://192.168.0.142:8080/ws');
+        // socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            console.log("------------ connect ------------");
+            console.log(frame);
+
+            stompClient.subscribe('/all/messages', function (result) {
+                console.log('---------------- message ----------------');
+                console.log(result);
+                show(JSON.parse(result.body));
+            });
+
+            stompClient.subscribe('/sub/channel/all', function (result) {
+                console.log('---------------- admin message ----------------');
+                show(JSON.parse(result.body));
+            });
+        });
+
+
+        // enter 키 이벤트
+        $(document).on('keydown', 'div.input-div textarea', function (e) {
+            if (e.keyCode == 13 && !e.shiftKey) {
+                e.preventDefault();
+                const message = $(this).val();
+                if (message) {
+                    sendMessage();
+                    // 입력창 clear
+                    clearTextarea();
+                }
+            }
+        });
+        // document.addEventListener('keydown', function(e) {
+        //     const inputDiv = document.querySelector('div.input-div textarea');
+        //     if (e.keyCode === 13 && !e.shiftKey && e.target === inputDiv) {
+        //         e.preventDefault();
+        //         const message = inputDiv.value;
+        //         if (message) {
+        //             sendMessage();
+        //             clearTextArea();
+        //         }
+        //     }
+        // });
+
+        // 메세지 입력박스 내용 지우기
+        function clearTextarea() {
+            $('div.input-div textarea').val('');
+            // document.querySelector('div.input-div textarea').value = '';
+        }
+
+        $('.back').on('click', function () {
+            location.href = 'login.html';
+        });
+        // document.querySelector('.back').addEventListener('click', function() {
+        //     location.href = 'login.html';
+        // });
+
+        // });
+
+        function sendMessage() {
+            console.log("------------ send ------------");
+            var message = document.getElementById('text').value;
+            const urlParams = new URL(location.href).searchParams;
+            name = urlParams.get('name');
+
+            stompClient.send("/app/application", {},
+                JSON.stringify({'type': '', 'sender': name, 'channelId': 'all', 'data': message}));
+
+            var target = $('#messages');
+            // var target = document.querySelector('#messages');
+            target.scrollTop(target[0].scrollHeight);
+        }
+
+        function show(message) {
+            var response = $('#messages');
+            // var response = document.querySelector('#messages');
+            var messageTag = '';
+
+            if (message.sender == 'admin') {
+                alert(
+                    '-------- 관리자 메세지 --------\n' +
+                    message.data
+                )
+                return;
+            }
+
+            if (message.sender !== name) {
+                messageTag =
+                    '<li style="list-style-type: none; float: left; background-color: #6ab1ec; width: 40%; padding: 30px 30px; margin: 30px 20px; border-radius: 10px;">' +
+                    '   <p style="font-size: 40px; color: white; font-weight: 500;">' + message.sender + " : " + message.data + '</p>' +
+                    '</li>';
+            } else {
+                messageTag =
+                    '<li style="list-style-type: none; float: right; background-color: rgba(0,0,0,0.3); width: 40%; padding: 30px 30px; margin: 30px 20px; border-radius: 10px;">' +
+                    '   <p style="font-size: 40px; color: white; font-weight: 500;">' + message.sender + " : " + message.data + '</p>' +
+                    '</div>';
+            }
+
+            response.append(messageTag);
+            response.scrollTop(response[0].scrollHeight);
+        }
+    });
+
+</script>
 </html>
