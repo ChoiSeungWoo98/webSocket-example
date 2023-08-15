@@ -141,8 +141,7 @@
 
     $(function () {
         // stomp 구독 처리 부분 시작
-        socket = new WebSocket('ws://localhost:8081/ws');
-        // socket = new WebSocket('ws://192.168.0.142:8080/ws');
+        socket = new WebSocket('ws://localhost:8082/ws');
         // socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
 
